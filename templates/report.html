@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="report.css">
+</head>
+<body>
+
+{# ── reusable macro for a generic Table ─────────────────────────────────── #}
+{% macro render_table(t, cls="fin-table") %}
+  {% if t and t.rows %}
+  <table class="{{ cls }}">
+    <thead>
+      <tr>
+        <th class="rowlabel">{{ t.title }}</th>
+        {% for c in t.columns %}<th>{{ c }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in t.rows %}
+      <tr>
+        <td class="rowlabel">{{ r.label }}</td>
+        {% for col in range(t.columns|length) %}
+          <td>{{ (r.cells[col] if col < r.cells|length else '') | blank }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+{% endmacro %}
+
+  <!-- ══════════════════════ PAGE 1 ══════════════════════ -->
+  <header class="brandbar">
+    <div class="brand">AI Equity Research</div>
+    <div class="brand-sub">Auto-generated research report</div>
+  </header>
+
+  <div class="title-row">
+    <div>
+      <h1 class="company">{{ d.company_name | blank }}</h1>
+      <div class="sector">{{ d.sector | blank }}{% if d.report_date %} &nbsp;·&nbsp; {{ d.report_date }}{% endif %}</div>
+    </div>
+    <div class="rating-box">
+      <div class="rating-chip rating-{{ d.rating|lower }}">{{ d.rating | blank }}</div>
+      <table class="rating-mini">
+        <tr><td>Target</td><td>{{ d.target_price | blank }}</td></tr>
+        <tr><td>CMP</td><td>{{ d.current_price | blank }}</td></tr>
+        <tr><td>Upside</td><td>{{ d.upside | blank }}</td></tr>
+      </table>
+    </div>
+  </div>
+
+  {% if d.thesis %}<div class="thesis">{{ d.thesis }}</div>{% endif %}
+
+  <div class="cols">
+    <aside class="col-side">
+      {% if d.company_data %}
+      <div class="side-label">Company Data</div>
+      <table class="kv">
+        {% for kv in d.company_data %}
+        <tr><td>{{ kv.label }}</td><td>{{ kv.value | blank }}</td></tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+
+      {{ render_table(d.shareholding, "side-table") }}
+      {{ render_table(d.price_performance, "side-table") }}
+    </aside>
+
+    <div class="col-main">
+      {% if d.description %}<p class="description">{{ d.description }}</p>{% endif %}
+      {% if d.highlights %}
+      <div class="section-label">Result Highlights</div>
+      <ul class="bullets">
+        {% for h in d.highlights %}<li>{{ h }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+  <div class="clear"></div>
+
+  {% if charts %}
+  <div class="section-label">Charts</div>
+  <div class="charts">
+    {% for ch in charts %}
+    <div class="chart"><img src="data:image/png;base64,{{ ch.b64 }}" alt="{{ ch.title }}"></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ══════════════════════ PAGE 2 ══════════════════════ -->
+  <div class="page-break"></div>
+
+  {% if d.estimates %}
+  <div class="section-label">Estimate Revisions</div>
+  {{ render_table(d.estimates, "fin-table") }}
+  {% endif %}
+
+  {% if d.key_highlights %}
+  <div class="section-label">Key Highlights</div>
+  <ul class="bullets">
+    {% for h in d.key_highlights %}<li>{{ h }}</li>{% endfor %}
+  </ul>
+  {% endif %}
+
+  <!-- ══════════════════════ FINANCIALS ══════════════════════ -->
+  {% if d.financials %}
+  <div class="page-break"></div>
+  <div class="section-label">Financials</div>
+  {% for t in d.financials %}
+    {{ render_table(t, "fin-table") }}
+  {% endfor %}
+  {% endif %}
+
+  <!-- ══════════════════════ BACK MATTER ══════════════════════ -->
+  {% if d.recommendation_history %}
+  <div class="section-label">Recommendation History</div>
+  <table class="fin-table">
+    <thead><tr><th class="rowlabel">Date</th><th>Rating</th><th>Target</th></tr></thead>
+    <tbody>
+      {% for r in d.recommendation_history %}
+      <tr><td class="rowlabel">{{ r.date | blank }}</td><td>{{ r.rating | blank }}</td><td>{{ r.target | blank }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+  <div class="disclaimer">
+    {% if d.analyst_name %}<strong>Analyst:</strong> {{ d.analyst_name }}<br>{% endif %}
+    {{ disclaimer }}
+  </div>
+
+</body>
+</html>

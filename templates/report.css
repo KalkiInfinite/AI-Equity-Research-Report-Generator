@@ -1,0 +1,114 @@
+@page {
+  size: A4;
+  margin: 1.4cm 1.3cm 1.6cm 1.3cm;
+  @bottom-center {
+    content: "AI Equity Research  ·  generated report  ·  page " counter(page) " / " counter(pages);
+    font-size: 7pt; color: #9aa3ad;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 8.6pt;
+  color: #1a2733;
+  line-height: 1.42;
+  margin: 0;
+}
+
+/* ── Brand bar ── */
+.brandbar {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 2.5px solid #1f6feb;
+  padding-bottom: 5px; margin-bottom: 12px;
+}
+.brand { font-size: 13pt; font-weight: 700; color: #1f6feb; letter-spacing: -0.2px; }
+.brand-sub { font-size: 7.5pt; color: #8a94a0; }
+
+/* ── Title row ── */
+.title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.company { font-size: 16pt; font-weight: 700; margin: 0 0 2px; color: #0f1c2b; }
+.sector { font-size: 8.5pt; color: #6b7785; }
+
+.rating-box { text-align: right; min-width: 150px; }
+.rating-chip {
+  display: inline-block; padding: 3px 14px; border-radius: 4px;
+  font-weight: 700; font-size: 10pt; color: #fff; background: #6b7785; letter-spacing: 0.5px;
+}
+.rating-buy, .rating-accumulate { background: #15803d; }
+.rating-hold { background: #d97706; }
+.rating-reduce, .rating-sell { background: #b91c1c; }
+.rating-mini { width: 100%; margin-top: 6px; border-collapse: collapse; font-size: 8pt; }
+.rating-mini td { padding: 1.5px 0; }
+.rating-mini td:first-child { color: #8a94a0; text-align: left; }
+.rating-mini td:last-child { text-align: right; font-weight: 600; }
+
+.thesis {
+  margin: 12px 0; padding: 7px 12px; background: #f1f6fe;
+  border-left: 3px solid #1f6feb; font-weight: 600; font-size: 9.5pt; color: #15314f;
+}
+
+/* ── Two-column layout ── */
+/* A floated sidebar (not flex) so the block can break across page boundaries.
+   Flex containers are monolithic in WeasyPrint and would jump a tall block to
+   the next page, leaving page 1 half empty. */
+.cols { margin-top: 8px; }
+.col-side { float: right; width: 34%; margin: 0 0 10px 18px; }
+.col-main { /* flows in the remaining width and wraps below the sidebar */ }
+.clear { clear: both; }
+
+.description { margin: 0 0 10px; text-align: justify; }
+
+.section-label {
+  font-size: 8pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.7px;
+  color: #1f6feb; margin: 14px 0 6px; border-bottom: 1px solid #e3e8ee; padding-bottom: 2px;
+}
+.side-label {
+  font-size: 7.5pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+  color: #6b7785; margin: 0 0 4px;
+}
+
+.bullets { margin: 0 0 8px; padding-left: 15px; }
+.bullets li { margin-bottom: 4px; }
+
+/* ── Key-value side box ── */
+.kv { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+.kv td { padding: 2.5px 4px; border-bottom: 1px solid #eef1f5; font-size: 8pt; }
+.kv td:first-child { color: #6b7785; }
+.kv td:last-child { text-align: right; font-weight: 600; }
+
+/* ── Tables ── */
+table.fin-table, table.side-table { width: 100%; border-collapse: collapse; margin: 4px 0 12px; }
+.fin-table th, .side-table th {
+  background: #1f6feb; color: #fff; font-size: 7.6pt; font-weight: 600;
+  padding: 4px 5px; text-align: right; border: 0.5px solid #1f6feb;
+}
+.fin-table th.rowlabel, .side-table th.rowlabel { text-align: left; }
+.fin-table td, .side-table td {
+  padding: 3px 5px; text-align: right; font-size: 7.8pt;
+  border: 0.5px solid #e7ebf0;
+}
+.fin-table td.rowlabel, .side-table td.rowlabel { text-align: left; font-weight: 500; color: #2a3744; }
+.fin-table tbody tr:nth-child(even), .side-table tbody tr:nth-child(even) { background: #f7f9fc; }
+.side-table th, .side-table td { font-size: 7.3pt; padding: 2.5px 4px; }
+
+/* ── Charts ── */
+/* inline-block (not flex/grid) is the most reliable two-up layout in
+   WeasyPrint: it wraps predictably across page breaks and a lone last chart
+   stays half-width instead of stretching. font-size:0 on the wrapper removes
+   the inline whitespace gap between boxes. */
+.charts { font-size: 0; margin: 4px 0 12px; }
+.chart {
+  display: inline-block; width: 48.5%; vertical-align: top; box-sizing: border-box;
+  border: 1px solid #e7ebf0; border-radius: 5px; padding: 4px;
+}
+.chart:nth-child(even) { margin-left: 2.5%; }
+.chart img { width: 100%; height: auto; display: block; }
+
+/* ── Misc ── */
+.page-break { page-break-before: always; }
+.disclaimer {
+  margin-top: 18px; padding-top: 8px; border-top: 1px solid #e3e8ee;
+  font-size: 6.8pt; color: #8a94a0; line-height: 1.4; text-align: justify;
+}
