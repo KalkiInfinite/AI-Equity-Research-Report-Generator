@@ -53,3 +53,17 @@ def render_pdf(data: ReportData) -> bytes:
 
     html = render_html(data)
     return HTML(string=html, base_url=str(_TEMPLATE_DIR)).write_pdf()
+
+
+def render_onepager_html(onepager_data, charts: list[dict]) -> str:
+    """Render the one-pager to HTML using the onepager.html template."""
+    from core.schema_onepager import OnePagerData
+    template = _env.get_template("onepager.html")
+    return template.render(d=onepager_data, charts=charts)
+
+
+def render_onepager_pdf(onepager_data, charts: list[dict]) -> bytes:
+    """Render the one-pager HTML to PDF bytes via WeasyPrint."""
+    from weasyprint import HTML
+    html = render_onepager_html(onepager_data, charts)
+    return HTML(string=html, base_url=str(_TEMPLATE_DIR)).write_pdf()

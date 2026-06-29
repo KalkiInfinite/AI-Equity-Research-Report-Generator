@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ d.company_name or 'Company' }} — One-Pager Summary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #F5F5F5;
+    color: #1a1a2e;
+    line-height: 1.6;
+    padding: 20px;
+  }
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    padding: 28px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .header-left h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+  }
+  .header-left .ticker { font-size: 13px; color: #94a3b8; }
+  .header-right {
+    text-align: right;
+    font-size: 12px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  /* Section */
+  .section {
+    padding: 24px 32px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .section:last-child { border-bottom: none; }
+  .section-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #2563eb;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: #2563eb;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* Snapshot grid */
+  .snapshot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .snapshot-item {
+    background: #F8FAFC;
+    padding: 12px 14px;
+    border-radius: 8px;
+  }
+  .snapshot-item .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    margin-bottom: 2px;
+  }
+  .snapshot-item .value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  /* Financial highlights table */
+  .fin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .fin-table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-bottom: 2px solid #e2e8f0;
+  }
+  .fin-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+  }
+  .fin-table .yoy-up { color: #16a34a; font-weight: 600; }
+  .fin-table .yoy-down { color: #dc2626; font-weight: 600; }
+
+  /* Segments */
+  .segment-card {
+    background: #F8FAFC;
+    padding: 14px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 3px solid #2563eb;
+  }
+  .segment-card:last-child { margin-bottom: 0; }
+  .segment-card .seg-name {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .segment-card .seg-meta {
+    font-size: 12px;
+    color: #64748b;
+  }
+  .segment-card .seg-commentary {
+    font-size: 12px;
+    color: #475569;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* Developments */
+  .dev-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f8fafc;
+    display: flex;
+    gap: 12px;
+  }
+  .dev-item:last-child { border-bottom: none; }
+  .dev-date {
+    font-size: 11px;
+    color: #94a3b8;
+    min-width: 80px;
+    padding-top: 2px;
+  }
+  .dev-headline { font-size: 13px; font-weight: 600; color: #1e293b; }
+  .dev-impact { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+  /* Risks */
+  .risk-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 8px 0;
+    border-bottom: 1px solid #f8fafc;
+  }
+  .risk-item:last-child { border-bottom: none; }
+  .risk-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .risk-badge.high { background: #fef2f2; color: #dc2626; }
+  .risk-badge.medium { background: #fffbeb; color: #d97706; }
+  .risk-badge.low { background: #f0fdf4; color: #16a34a; }
+  .risk-category { font-size: 11px; color: #64748b; font-weight: 500; }
+  .risk-desc { font-size: 13px; color: #334155; }
+
+  /* Commentary blocks */
+  .commentary { font-size: 13px; color: #334155; white-space: pre-line; }
+
+  /* Takeaway */
+  .takeaway-box {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    padding: 18px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+
+  /* Charts */
+  .charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .chart-card {
+    background: #F8FAFC;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .chart-card img { max-width: 100%; height: auto; }
+  .chart-card .chart-title { font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 8px; }
+
+  /* Sources */
+  .sources { font-size: 11px; color: #94a3b8; }
+  .na { color: #94a3b8; font-style: italic; }
+
+  /* Disclaimer */
+  .disclaimer {
+    padding: 16px 32px;
+    background: #f8fafc;
+    font-size: 10px;
+    color: #94a3b8;
+    border-top: 1px solid #f0f0f0;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>{{ d.company_name or 'Company' | blank }}</h1>
+      {% if d.snapshot.ticker %}<div class="ticker">NSE: {{ d.snapshot.ticker }} | {{ d.snapshot.sector }}</div>{% endif %}
+    </div>
+    <div class="header-right">
+      {% if d.report_date %}<div>{{ d.report_date }}</div>{% endif %}
+    </div>
+  </div>
+
+  <!-- Company Snapshot -->
+  <div class="section">
+    <div class="section-title">Company Snapshot</div>
+    <div class="snapshot-grid">
+      {% set fields = [
+        ('Ticker', d.snapshot.ticker),
+        ('Sector', d.snapshot.sector),
+        ('Market Cap', d.snapshot.market_cap),
+        ('Current Price', d.snapshot.current_price),
+        ('P/E Ratio', d.snapshot.pe_ratio),
+        ('P/B Ratio', d.snapshot.pb_ratio),
+        ('52W High', d.snapshot.week52_high),
+        ('52W Low', d.snapshot.week52_low),
+        ('Dividend Yield', d.snapshot.dividend_yield),
+        ('Beta', d.snapshot.beta),
+        ('Revenue (TTM)', d.snapshot.revenue_ttm),
+        ('Net Income (TTM)', d.snapshot.net_income_ttm),
+        ('Employees', d.snapshot.employees),
+        ('Founded', d.snapshot.founded),
+        ('Headquarters', d.snapshot.headquarters),
+      ] %}
+      {% for label, val in fields %}
+        {% if val %}
+        <div class="snapshot-item">
+          <div class="label">{{ label }}</div>
+          <div class="value">{{ val }}</div>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Business Overview -->
+  <div class="section">
+    <div class="section-title">Business Overview</div>
+    {% if d.business_overview.summary %}
+      <div class="commentary">{{ d.business_overview.summary }}</div>
+    {% else %}
+      <span class="na">—</span>
+    {% endif %}
+    {% if d.business_overview.business_segments %}
+      <div style="margin-top:12px;">
+        {% for seg in d.business_overview.business_segments %}
+          <span style="display:inline-block;background:#EFF6FF;color:#2563EB;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:500;margin:2px 4px 2px 0;">{{ seg }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Financial Highlights -->
+  {% if d.financial_highlights %}
+  <div class="section">
+    <div class="section-title">Financial Highlights</div>
+    <table class="fin-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+          <th>Period</th>
+          <th>YoY Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in d.financial_highlights %}
+        <tr>
+          <td style="font-weight:600;">{{ h.metric }}</td>
+          <td>{{ h.value }}</td>
+          <td>{{ h.period }}</td>
+          <td class="{% if '+' in h.yoy_change %}yoy-up{% elif '-' in h.yoy_change and h.yoy_change %}yoy-down{% endif %}">
+            {{ h.yoy_change or '—' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  <!-- Growth & Margin Commentary -->
+  {% if d.growth_commentary %}
+  <div class="section">
+    <div class="section-title">Growth & Margin Commentary</div>
+    <div class="commentary">{{ d.growth_commentary }}</div>
+  </div>
+  {% endif %}
+
+  <!-- Segment Insights -->
+  {% if d.segment_insights %}
+  <div class="section">
+    <div class="section-title">Segment Insights</div>
+    {% for seg in d.segment_insights %}
+    <div class="segment-card">
+      <div class="seg-name">
+        <span>{{ seg.segment_name }}</span>
+        {% if seg.revenue %}<span style="font-size:12px;color:#2563eb;">{{ seg.revenue }}</span>{% endif %}
+      </div>
+      {% if seg.growth %}<div class="seg-meta">Growth: {{ seg.growth }}</div>{% endif %}
+      {% if seg.commentary %}<div class="seg-commentary">{{ seg.commentary }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Charts -->
+  {% if charts %}
+  <div class="section">
+    <div class="section-title">Charts</div>
+    <div class="charts-row">
+      {% for c in charts %}
+      <div class="chart-card">
+        <div class="chart-title">{{ c.title }}</div>
+        <img src="data:image/png;base64,{{ c.b64 }}" alt="{{ c.title }}">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Recent Developments -->
+  {% if d.recent_developments %}
+  <div class="section">
+    <div class="section-title">Recent Developments</div>
+    {% for dev in d.recent_developments %}
+    <div class="dev-item">
+      <div class="dev-date">{{ dev.date }}</div>
+      <div>
+        <div class="dev-headline">{{ dev.headline }}</div>
+        {% if dev.impact %}<div class="dev-impact">{{ dev.impact }}</div>{% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Key Risks -->
+  {% if d.key_risks %}
+  <div class="section">
+    <div class="section-title">Key Risks</div>
+    {% for r in d.key_risks %}
+    <div class="risk-item">
+      <span class="risk-badge {{ r.severity.lower() }}">{{ r.severity }}</span>
+      <div>
+        {% if r.category %}<div class="risk-category">{{ r.category }}</div>{% endif %}
+        <div class="risk-desc">{{ r.description }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Analyst Takeaway -->
+  {% if d.analyst_takeaway %}
+  <div class="section">
+    <div class="section-title">Analyst Takeaway</div>
+    <div class="takeaway-box">{{ d.analyst_takeaway }}</div>
+  </div>
+  {% endif %}
+
+  <!-- Sources Used -->
+  {% if d.sources_used %}
+  <div class="section">
+    <div class="section-title">Sources Used</div>
+    <ul class="sources" style="list-style: disc outside; padding-left: 18px;">
+      {% for src in d.sources_used %}
+      <li>{{ src }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">
+    Generated automatically from uploaded company documents for informational purposes only.
+    Not investment advice. Figures are AI-extracted and may contain errors; verify against source documents.
+  </div>
+
+</div>
+</body>
+</html>

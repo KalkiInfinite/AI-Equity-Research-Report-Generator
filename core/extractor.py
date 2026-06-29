@@ -44,7 +44,7 @@ from core.schema import ReportData
 
 # Default model. Override via the EXTRACTION_MODEL environment variable to use
 # any provider/model you have a key for.
-DEFAULT_MODEL = os.getenv("EXTRACTION_MODEL", "anthropic/claude-sonnet-4-6")
+DEFAULT_MODEL = os.getenv("EXTRACTION_MODEL", "deepseek/deepseek-chat")
 
 # How much document text we send. Long decks are trimmed to a safe size.
 MAX_TEXT_CHARS = 60_000
